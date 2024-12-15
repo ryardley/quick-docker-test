@@ -1,54 +1,38 @@
-This tests using QUIC to connect two containers in a single node docker swarm. 
+# QUIC Container Communication Test
 
-## Usage 
+This project demonstrates QUIC protocol communication between two containers in a single-node Docker Swarm environment.
 
-## Initialize Swarm
+## Getting Started
 
-Initialize swarm on your local machine if you have not yet done so.
+First, initialize your local Docker Swarm if you haven't already:
 
 ```
 docker swarm init
 ```
 
-## Build the docker image
-
-Build the docker image locally.
+Build the Docker image locally using:
 
 ```
 ./build.sh
 ```
 
-This will build the Dockerfile
-
-## Deploy to the local swarm cluster
-
-Deploy the local image to your local swarm.
+Deploy the services to your Swarm cluster:
 
 ```
 ./deploy.sh
-
-Updating service quic_server (id: zpaasdu4zku1lfl9ymups8nf8)
-image localrepo/quic-app:latest could not be accessed on a registry to record
-its digest. Each node will access localrepo/quic-app:latest independently,
-possibly leading to different nodes running different
-versions of the image.
-
-Updating service quic_client (id: 1nr5qhtheje2565slzp9g1s7c)
-image localrepo/quic-app:latest could not be accessed on a registry to record
-its digest. Each node will access localrepo/quic-app:latest independently,
-possibly leading to different nodes running different
-versions of the image.
 ```
 
-Don't worry about the warnings as the local node still has access to the image
+Note: You can safely ignore the registry access warnings - the local node will still function properly.
 
-## Inspect the logs
+## Monitoring Communication
+
+View the interaction between containers using:
 
 ```
 ./inspect.sh
 ```
 
-This should give you output like the following which shows what has happened:
+You should see output like this:
 
 ```
 =================================
@@ -70,21 +54,9 @@ quic_client.1.x4t19ket4za3@nixos    | [1734259408] Client sending message
 quic_client.1.x4t19ket4za3@nixos    | [1734259408] Client finished sending
 ```
 
-## Explanation
+## How It Works
 
-This code implements a basic QUIC client-server test using the Quinn library. Here's a detailed breakdown:
-The program can run in two modes (controlled by the ROLE environment variable):
-Server Mode (ROLE=server):
+The application uses the Quinn library and operates in two modes controlled by the ROLE environment variable:
+Server Mode (ROLE=server) generates a self-signed certificate for localhost, listens on port 4433, and handles incoming connections by displaying received messages.
 
-1. Generates a self-signed certificate for "localhost"
-1. Creates a QUIC server endpoint listening on port 4433 (all interfaces)
-1. Waits for incoming connections
-1. When a connection arrives, accepts it and reads incoming data
-1. Prints received messages to stdout
-
-Client Mode (default):
-
-1. Creates a QUIC client endpoint with disabled certificate verification
-1. Attempts to connect to a server named "server" on port 4433 (This uses docker's hostname service discovery)
-1. Once connected, sends "Hello!" message
-1. Keeps the client alive with an infinite sleep loop (so that the binary is not restarted by swarm)
+Client Mode connects to the container running the "quic_server" service on port 4433 (using Docker Swarm's DNS service discovery), sends a "Hello!" message, and maintains an active connection through an infinite loop to prevent Swarm from restarting the container.

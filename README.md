@@ -1,4 +1,4 @@
-This tests using QUIC to connect two containers in docker swarm. 
+This tests using QUIC to connect two containers in a single node docker swarm. 
 
 ## Usage 
 

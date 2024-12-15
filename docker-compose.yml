@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  server:
+    image: localrepo/quic-app
+    environment:
+      - ROLE=server
+    deploy:
+      replicas: 1
+    networks:
+      - quic-net
+
+  client:
+    image: localrepo/quic-app
+    environment:
+      - ROLE=client
+    deploy:
+      replicas: 1
+    depends_on:
+      - server
+    networks:
+      - quic-net
+
+networks:
+  quic-net:
+    driver: overlay

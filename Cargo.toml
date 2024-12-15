@@ -1,0 +1,10 @@
+[package]
+name = "quic-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+quinn = "0.10"
+tokio = { version = "1.0", features = ["full"] }
+rcgen = "0.11"
+rustls = { version = "0.21", features = ["dangerous_configuration"] }
